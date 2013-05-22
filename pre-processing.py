@@ -28,21 +28,8 @@ for f in os.listdir(path):
             o = open("out/"+filename+".csv","w")
             o.write(title+"\n")
             for line in f:
-                #o.write(line[0:20]+","+line[24:28]+","+line[29:34]+","+line[40:47]+","+line[48:924])
                 if (len(line)>10):
                     o.write(line[40:47]+convert(line[48:924])+"\n")
-                #ans = re.search(r'[\.\X]{875}',line)
-                #print(len(line))
-                #if ans:
-                #    answer = ans.group(0)
-                #sn = re.search(r'(\b\d[\d\s\*]{4}\d\b|\b\d[\d\s\*]{5}\d\b)',line)
-                #sn = re.search(r'(N\s[\d\*\s]{6,})',line)
-                #if sn:
-                #    student = sn.group(0)[2:].strip()
-             #   if len(line.split())!=6:
-             #       o.write(",".join(re.sub(r'(\d)\s(\d)',r'\1\2',line).split())+"\n")
-             #   else:
-                   # o.write(",".join(line.split())+"\n")
             f.close()
             o.close()
     except IndexError:
