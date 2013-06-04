@@ -1,3 +1,9 @@
 *.dat
 *.csv
 .Rproj.user
+*.txt
+*.log
+*.pdf
+*.gz
+*.dvi
+*.xls

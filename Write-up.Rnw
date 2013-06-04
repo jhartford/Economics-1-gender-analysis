@@ -1,0 +1,84 @@
+\documentclass{article}
+\usepackage[sc]{mathpazo}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\usepackage{url}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=true,bookmarksopen=true,bookmarksopenlevel=2,
+ breaklinks=false,pdfborder={0 0 1},backref=false,colorlinks=false]
+ {hyperref}
+\hypersetup{
+ pdfstartview={XYZ null null 1}}
+\usepackage{breakurl}
+\begin{document}
+\date{}
+
+
+<<setup, include=FALSE, cache=FALSE>>=
+# set global chunk options
+opts_chunk$set(fig.path='figure/minimal-', fig.align='center', fig.show='hold')
+options(replace.assign=TRUE,width=90)
+require(ggplot2)
+
+# Required Functions
+
+markScript <- function(memo,data){
+  n <- length(memo[memo!=""])
+  answers <- data[,2:(n+1)]
+  blanks <- answers=="z"
+  temp <- as.data.frame(matrix(data=NA,nrow = nrow(answers),ncol = ncol(answers)))
+  for (i in 1:length(memo[memo!=""])){
+    temp[,i] <- -1
+    temp[which(answers[,i]==tolower(memo[i])),i]<-4
+    temp[which(answers[,i]=="z"),i]<-0
+  }
+  temp$sn <- gsub(" ","",data$student_number)
+  temp$mark <- rowSums(temp[1:n])/(n*4)
+  temp$blanks <- rowSums(temp[1:n]==0)
+  markScript<-temp
+}
+
+# Read CSVs
+ECON1008.2012 <- read.csv("Student data/02. ECON1008 2012 Registered students personal info and matric resultsDIS.csv", sep=",")
+memo2012 <- read.csv("memos/2012-memo.csv", sep=",")
+
+# Data pre-processing
+
+EC1008.2012<-ECON1008.2012[ECON1008.2012$Test.Segment.Code=="AGGREGATE",]
+EC1008.2012$sn <- gsub(pattern = "[A-Z]",replacement="",EC1008.2012$Student.Number)
+
+t1.2012<- read.csv("out/econ1008-20120327.csv", sep = ",")
+t1.2012.marked <- markScript(memo2012$Micro.T1.sem1.2012,t1.2012)
+t1.2012.full<-merge(EC1008.2012,t1.2012.marked)
+
+@
+
+
+\title{Student Data}
+
+
+\author{Jason Hartford}
+
+\maketitle
+
+\section{Analysis}
+
+\subsection{Histograms of number of blanks}
+
+<<boring-plots, echo=FALSE>>=
+library(plyr)
+cdf <- ddply(t1.2012.full, .(Sex), summarise, blanks.mean=mean(blanks), blanks.sd=sd(blanks))
+ggplot(t1.2012.full,aes(x=blanks, fill = Sex)) + 
+  geom_histogram(binwidth = 0.5, alpha = 0.5,position = "identity") +
+  geom_vline(data=cdf, aes(xintercept=c(blanks.mean),  colour=Sex),
+           linetype="dashed", size=1, alpha= 0.5) 
+cdf <- ddply(t1.2012.full[t1.2012.full$blanks!=0,], .(Sex), summarise, blanks.mean=mean(blanks), blanks.sd=sd(blanks))
+ggplot(t1.2012.full[t1.2012.full$blanks!=0,],aes(x=blanks, fill = Sex)) + 
+  geom_histogram(binwidth = 0.5, alpha = 0.5,position = "identity") + 
+  geom_vline(data=cdf, aes(xintercept=c(blanks.mean),  colour=Sex),linetype="dashed", size=1, alpha = 0.5)
+@
+
+\end{document}
