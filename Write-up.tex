@@ -53,6 +53,7 @@
 \newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
 
 \usepackage{alltt}
+%%\newtheorem{rexample}{R Example}[section]
 \usepackage[sc]{mathpazo}
 \usepackage[T1]{fontenc}
 \usepackage{geometry}
@@ -84,14 +85,235 @@
 \maketitle
 
 \section{Analysis}
+\subsection{Summary statistics}
+
+
+
+\subsection{Regressions}
+
+
+
+
+% Table created by StarGazer v.3.0.1 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+% Date and time: Wed, Jun 05, 2013 - 20:17:20
+\begin{table}[htb] \centering 
+  \caption{Regression Results} 
+  \label{} 
+\footnotesize 
+
+\begin{tabular}{@{\extracolsep{5pt}}lccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{3}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-4} 
+\\[-1.8ex] & \multicolumn{3}{c}{Test 1 Mark} \\ 
+\\[-1.8ex] & (1) & (2) & (3)\\ 
+\hline \\[-1.8ex] 
+ Sex - Male & $-0.015$ & $-0.008$ & $-0.013$ \\ 
+  & $(0.011)$ & $(0.009)$ & $(0.009)$ \\ 
+  & & & \\ 
+ Negative Marking &  &  & $-0.083^{***}$ \\ 
+  &  &  & $(0.011)$ \\ 
+  & & & \\ 
+ Race \& Chinese & $0.085^{*}$ & $0.034$ & $0.053^{*}$ \\ 
+  & $(0.049)$ & $(0.038)$ & $(0.031)$ \\ 
+  & & & \\ 
+ Race \& Coloured & $0.013$ & $0.043$ & $0.025$ \\ 
+  & $(0.032)$ & $(0.027)$ & $(0.021)$ \\ 
+  & & & \\ 
+ Race \& Indian & $-0.008$ & $0.049^{***}$ & $0.022^{**}$ \\ 
+  & $(0.015)$ & $(0.012)$ & $(0.009)$ \\ 
+  & & & \\ 
+ Race \& White & $0.062^{***}$ & $0.056^{***}$ & $0.059^{***}$ \\ 
+  & $(0.015)$ & $(0.012)$ & $(0.010)$ \\ 
+  & & & \\ 
+ Matric Maths Average & $0.008^{***}$ & $0.005^{***}$ & $0.006^{***}$ \\ 
+  & $(0.001)$ & $(0.0005)$ & $(0.0004)$ \\ 
+  & & & \\ 
+ Age & $0.002$ & $0.016^{***}$ & $0.010^{***}$ \\ 
+  & $(0.006)$ & $(0.005)$ & $(0.004)$ \\ 
+  & & & \\ 
+ Male Negative Marking &  &  & $0.001$ \\ 
+  &  &  & $(0.014)$ \\ 
+  & & & \\ 
+ Constant & $-0.114$ & $-0.112$ & $-0.092$ \\ 
+  & $(0.125)$ & $(0.101)$ & $(0.078)$ \\ 
+  & & & \\ 
+\hline \\[-1.8ex] 
+Observations & $1,080$ & $1,309$ & $2,389$ \\ 
+R$^{2}$ & $0.182$ & $0.113$ & $0.165$ \\ 
+Adjusted R$^{2}$ & $0.176$ & $0.108$ & $0.162$ \\ 
+Residual Std. Error & $0.179 (df = 1072)$ & $0.156 (df = 1301)$ & $0.168 (df = 2379)$ \\ 
+F statistic & $33.970^{***} (df = 7; 1072)$ & $23.740^{***} (df = 7; 1301)$ & $52.130^{***} (df = 9; 2379)$ \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{3}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\normalsize 
+\end{tabular} 
+\end{table} 
+
+
+
+
+% Table created by StarGazer v.3.0.1 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+% Date and time: Wed, Jun 05, 2013 - 20:17:20
+\begin{table}[htb] \centering 
+  \caption{Regression Results} 
+  \label{} 
+\footnotesize 
+
+\begin{tabular}{@{\extracolsep{5pt}}lc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{1}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-2} 
+\\[-1.8ex] & Test 1 Mark \\ 
+\hline \\[-1.8ex] 
+ Sex - Male & $-0.013$ \\ 
+  & $(0.009)$ \\ 
+  & \\ 
+ Negative Marking & $-0.076^{***}$ \\ 
+  & $(0.012)$ \\ 
+  & \\ 
+ Race - Chinese & $0.023$ \\ 
+  & $(0.041)$ \\ 
+  & \\ 
+ Race - Coloured & $0.041$ \\ 
+  & $(0.029)$ \\ 
+  & \\ 
+ Race - Indian & $0.044^{***}$ \\ 
+  & $(0.013)$ \\ 
+  & \\ 
+ Race - White & $0.052^{***}$ \\ 
+  & $(0.013)$ \\ 
+  & \\ 
+ Matric Maths Average & $0.006^{***}$ \\ 
+  & $(0.0004)$ \\ 
+  & \\ 
+ Age & $0.010^{***}$ \\ 
+  & $(0.004)$ \\ 
+  & \\ 
+ Negative Marking \& Male & $-0.0001$ \\ 
+  & $(0.014)$ \\ 
+  & \\ 
+ Negative Marking \& Chinese & $0.068$ \\ 
+  & $(0.061)$ \\ 
+  & \\ 
+ Negative Marking \& Coloured & $-0.032$ \\ 
+  & $(0.042)$ \\ 
+  & \\ 
+ Negative Marking \& Indian & $-0.047^{**}$ \\ 
+  & $(0.019)$ \\ 
+  & \\ 
+ Negative Marking \& White & $0.015$ \\ 
+  & $(0.019)$ \\ 
+  & \\ 
+ Constant & $-0.087$ \\ 
+  & $(0.078)$ \\ 
+  & \\ 
+\hline \\[-1.8ex] 
+Observations & $2,389$ \\ 
+R$^{2}$ & $0.168$ \\ 
+Adjusted R$^{2}$ & $0.164$ \\ 
+Residual Std. Error & $0.168 (df = 2375)$ \\ 
+F statistic & $36.930^{***} (df = 13; 2375)$ \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\normalsize 
+\end{tabular} 
+\end{table} 
+
+
+
+\newpage{}
+
+
+
+
+
+% Table created by StarGazer v.3.0.1 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+% Date and time: Wed, Jun 05, 2013 - 20:17:20
+\begin{table}[htb] \centering 
+  \caption{Melted Regression Results} 
+  \label{} 
+\footnotesize 
+
+\begin{tabular}{@{\extracolsep{5pt}}lc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{1}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-2} 
+\\[-1.8ex] & Left Question Blank \\ 
+\hline \\[-1.8ex] 
+ Matric Average & $-0.017^{***}$ \\ 
+  & $(0.002)$ \\ 
+  & \\ 
+ Test 1 Mark & $-2.057^{***}$ \\ 
+  & $(0.117)$ \\ 
+  & \\ 
+ Sex - Male & $-0.065$ \\ 
+  & $(0.042)$ \\ 
+  & \\ 
+ Constant & $0.679^{***}$ \\ 
+  & $(0.161)$ \\ 
+  & \\ 
+\hline \\[-1.8ex] 
+Observations & $16,200$ \\ 
+Log likelihood & $-7,248.000$ \\ 
+Akaike Inf. Crit. & $14,504.000$ \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\normalsize 
+\end{tabular} 
+\end{table} 
+
+
 
 \subsection{Histograms of number of blanks}
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 
-{\centering \includegraphics[width=\maxwidth]{figure/minimal-boring-plots1} 
-\includegraphics[width=\maxwidth]{figure/minimal-boring-plots2} 
+{\centering \includegraphics[width=\maxwidth]{figure/minimal-histogram-number-blanks} 
+
+}
+
+
+
+\end{knitrout}
+
+
+If we examine the above, it seems that the data are simmilar for both men and women, with the exception of the zero blanks point. This is supported by the following table  which shows the proportion of male and female students who answered all questions and left nothing blank.
+
+
+% Table created by StarGazer v.3.0.1 by Marek Hlavac, Harvard University. E-mail: hlavac at fas.harvard.edu
+% Date and time: Wed, Jun 05, 2013 - 20:17:21
+\begin{table}[htb] \centering 
+  \caption{Students who answered all questions} 
+  \label{} 
+\footnotesize 
+
+\begin{tabular}{@{\extracolsep{5pt}} c c } 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+Sex & Answered.Everything \\ 
+\hline \\[-1.8ex] 
+F & 17.18 \% \\ 
+M & 24.83 \% \\ 
+\hline \\[-1.8ex] 
+\normalsize 
+\end{tabular} 
+\end{table} 
+
+
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/minimal-histogram-number-blanks-no-zero} 
 
 }
 

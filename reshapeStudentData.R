@@ -1,7 +1,12 @@
 library(ggplot2)
 library(plyr)
 
+ECON1008.2012 <- read.csv("Student data/02. ECON1008 2012 Registered students personal info and matric resultsDIS.csv", sep=",")
+ECON1008.2013 <- read.csv("Student data/03. ECON1008 2013 Registered students personal info and matric resultsDIS.csv", sep=",")
+memo2012 <- read.csv("memos/2012-memo.csv", sep=",")
+
 EC1008.2012<-ECON1008.2012[ECON1008.2012$Test.Segment.Code=="AGGREGATE",]
+EC1008.2013<-ECON1008.2013[ECON1008.2013$Test.Segment.Code=="AGGREGATE",]
 EC1008.2012$sn <- gsub(pattern = "[A-Z]",replacement="",EC1008.2012$Student.Number)
 EC1008.2011<-ECON1008.2011[ECON1008.2011$Test.Segment.Code=="AGGREGATE",]
 

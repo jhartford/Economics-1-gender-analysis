@@ -1,0 +1,41 @@
+\documentclass{article}
+
+\begin{document}
+
+%%Gender Table
+\begin{table}[htb] \centering 
+  \caption{Gender} 
+  \label{} 
+\footnotesize 
+
+\begin{tabular}{@{\extracolsep{5pt}} c c } 
+\\[-1.8ex]\hline  
+\hline \\[-1.8ex] 
+Female & \Sexpr{sum(combined$Sex == "F")} \\ 
+Male & \Sexpr{sum(combined$Sex == "M")} \\ 
+\hline \\[-1.8ex] 
+\normalsize 
+\end{tabular} 
+\end{table} 
+%%Race Table
+\begin{table}[htb] \centering 
+  \caption{Race} 
+  \label{} 
+\footnotesize 
+
+\begin{tabular}{@{\extracolsep{5pt}} c c } 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+Black & \Sexpr{sum(combined$Race.Description == "Black")} \\ 
+Indian & \Sexpr{sum(combined$Race.Description == "Indian")} \\ 
+White & \Sexpr{sum(combined$Race.Description == "White")} \\ 
+Coloured & \Sexpr{sum(combined$Race.Description == "Coloured")}  \\ 
+Chinese & \Sexpr{sum(combined$Race.Description == "Chinese")} \\ 
+\hline \\[-1.8ex] 
+\normalsize 
+\end{tabular} 
+\end{table} 
+
+
+
+\end{document}

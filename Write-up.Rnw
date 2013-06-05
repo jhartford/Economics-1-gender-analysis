@@ -1,4 +1,5 @@
 \documentclass{article}
+%%\newtheorem{rexample}{R Example}[section]
 \usepackage[sc]{mathpazo}
 \usepackage[T1]{fontenc}
 \usepackage{geometry}
@@ -21,39 +22,67 @@
 # set global chunk options
 opts_chunk$set(fig.path='figure/minimal-', fig.align='center', fig.show='hold')
 options(replace.assign=TRUE,width=90)
-require(ggplot2)
 
 # Required Functions
+require(stargazer)
+require(ggplot2)
+library(plyr)
+require(reshape2)
 
-markScript <- function(memo,data){
+markScript <- function(memo,data,neg.marking = TRUE){
   n <- length(memo[memo!=""])
   answers <- data[,2:(n+1)]
   blanks <- answers=="z"
   temp <- as.data.frame(matrix(data=NA,nrow = nrow(answers),ncol = ncol(answers)))
+  for (i in 1:length(memo[memo!=""])){
+    temp[,i] <- 0
+    temp[which(answers[,i]==tolower(memo[i])),i]<-4
+  }
+  temp$mark.lenient <- rowSums(temp[1:n])/(n*4)
   for (i in 1:length(memo[memo!=""])){
     temp[,i] <- -1
     temp[which(answers[,i]==tolower(memo[i])),i]<-4
     temp[which(answers[,i]=="z"),i]<-0
   }
   temp$sn <- gsub(" ","",data$student_number)
-  temp$mark <- rowSums(temp[1:n])/(n*4)
+  temp$mark.harsh <- rowSums(temp[1:n])/(n*4)
+  if(neg.marking)temp$mark <- temp$mark.harsh
+  if(!neg.marking)temp$mark <- temp$mark.lenient
   temp$blanks <- rowSums(temp[1:n]==0)
   markScript<-temp
 }
 
 # Read CSVs
 ECON1008.2012 <- read.csv("Student data/02. ECON1008 2012 Registered students personal info and matric resultsDIS.csv", sep=",")
+ECON1008.2013 <- read.csv("Student data/03. ECON1008 2013 Registered students personal info and matric resultsDIS.csv", sep=",")
 memo2012 <- read.csv("memos/2012-memo.csv", sep=",")
 
 # Data pre-processing
 
-EC1008.2012<-ECON1008.2012[ECON1008.2012$Test.Segment.Code=="AGGREGATE",]
+EC1008.2012<-ECON1008.2012[ECON1008.2012$Test.Segment.Code=="MATNSC",]
+multiples <- (summary(EC1008.2012$Student.Number)>1)
+EC1008.2012<-EC1008.2012[!(EC1008.2012$Student.Number %in% names(summary(EC1008.2012$Student.Number))[multiples]),]
+EC1008.2013<-ECON1008.2013[ECON1008.2013$Test.Segment.Code=="MATNSC",]
+multiples <- (summary(EC1008.2013$Student.Number)>1)
+EC1008.2013<-EC1008.2013[!(EC1008.2013$Student.Number %in% names(summary(EC1008.2013$Student.Number))[multiples]),]
 EC1008.2012$sn <- gsub(pattern = "[A-Z]",replacement="",EC1008.2012$Student.Number)
+EC1008.2013$sn <- gsub(pattern = "[A-Z]",replacement="",EC1008.2013$Student.Number)
 
 t1.2012<- read.csv("out/econ1008-20120327.csv", sep = ",")
 t1.2012.marked <- markScript(memo2012$Micro.T1.sem1.2012,t1.2012)
 t1.2012.full<-merge(EC1008.2012,t1.2012.marked)
 
+t1.2013<- read.csv("out/econ1008a-20130319.csv", sep = ",")
+t1.2013.marked <- markScript(memo2012$Micro.T1..sem1..2013,t1.2013,neg.marking = FALSE)
+t1.2013.full<-merge(EC1008.2013,t1.2013.marked)
+
+temp2012 <- t1.2012.full[,c("sn","Calendar.Instance.Year","Age","Home.Language.Description","Hp.Province","Race.Description","Sex","Test.Segment.Percentile","mark","mark.lenient","mark.harsh","blanks")]
+temp2012$neg.marking <- TRUE
+temp2013 <- t1.2013.full[,c("sn","Calendar.Instance.Year","Age","Home.Language.Description","Hp.Province","Race.Description","Sex","Test.Segment.Percentile","mark","mark.lenient","mark.harsh","blanks")]
+temp2013$neg.marking <- FALSE
+combined <- rbind(temp2012,temp2013)
+repeats <- merge(temp2012,temp2013, by = "sn")
+rm(temp2012,temp2013)
 @
 
 
@@ -65,20 +94,79 @@ t1.2012.full<-merge(EC1008.2012,t1.2012.marked)
 \maketitle
 
 \section{Analysis}
+\subsection{Summary statistics}
+
+
+
+\subsection{Regressions}
+<<regressions_calculations, echo=FALSE, include=FALSE>>=
+mod.lm2012 <- lm(mark ~ Sex + Race.Description + Test.Segment.Percentile + Age, data = t1.2012.full)
+mod.lm2013 <- lm(mark ~ Sex + Race.Description + Test.Segment.Percentile + Age, data = t1.2013.full)
+mod.combined <- lm(mark ~ Sex*neg.marking + Race.Description + Test.Segment.Percentile + Age , data = combined)
+mod.combined.full <- lm(mark ~ Sex*neg.marking + Race.Description*neg.marking + Test.Segment.Percentile + Age , data = combined)
+@
+
+<<regression_output, echo=FALSE, results='asis' >>=  
+stargazer(mod.lm2012,mod.lm2013, mod.combined, 
+          title="Regression Results",
+          dep.var.labels = c("Test 1 Mark"),
+          covariate.labels=c("Sex - Male","Negative Marking","Race \\& Chinese",
+                             "Race \\& Coloured","Race \\& Indian","Race \\& White",
+                             "Matric Maths Average","Age","Male Negative Marking","Constant")) 
+@
+
+<<regression_output_full, echo=FALSE, results='asis' >>=  
+stargazer(mod.combined.full, 
+          title="Regression Results",
+          dep.var.labels = c("Test 1 Mark"),          
+          covariate.labels=c("Sex - Male","Negative Marking","Race - Chinese",
+                             "Race - Coloured","Race - Indian","Race - White",
+                             "Matric Maths Average","Age","Negative Marking \\& Male",
+                             "Negative Marking \\& Chinese","Negative Marking \\& Coloured",
+                             "Negative Marking \\& Indian","Negative Marking \\& White",
+                             "Constant")) 
+@
+
+\newpage{}
+
+<<regression_melted,echo=FALSE>>=
+t1.2012.limited <- t1.2012.full[,c("sn","Test.Segment.Percentile","blanks","mark","Sex","V1","V2","V3","V4","V5","V6","V7","V8","V9","V10","V11","V12","V13","V14","V15")]
+t1.2012.melted <- melt(t1.2012.limited,id=c("sn","Test.Segment.Percentile","blanks","mark","Sex"))
+names(t1.2012.melted)[names(t1.2012.melted)=="variable"]<-"question"
+t1.2012.melted$blank <- "answered" 
+t1.2012.melted$blank[t1.2012.melted$value == 0] <- "blank" 
+t1.2012.melted$blank <- as.factor(t1.2012.melted$blank)
+mod.melted = glm(blank~Test.Segment.Percentile+mark+Sex,data=t1.2012.melted,family=binomial(link="logit"))
+@
+
+<<regression_meltedoutput, echo=FALSE, results='asis' >>=  
+stargazer(mod.melted, title="Melted Regression Results",dep.var.labels = c("Left Question Blank"),covariate.labels=c("Matric Average", "Test 1 Mark", "Sex - Male", "Constant")) 
+@
 
 \subsection{Histograms of number of blanks}
 
-<<boring-plots, echo=FALSE>>=
-library(plyr)
+<<histogram-number-blanks, echo=FALSE>>=
 cdf <- ddply(t1.2012.full, .(Sex), summarise, blanks.mean=mean(blanks), blanks.sd=sd(blanks))
 ggplot(t1.2012.full,aes(x=blanks, fill = Sex)) + 
   geom_histogram(binwidth = 0.5, alpha = 0.5,position = "identity") +
   geom_vline(data=cdf, aes(xintercept=c(blanks.mean),  colour=Sex),
-           linetype="dashed", size=1, alpha= 0.5) 
+           linetype="dashed", size=0.5, alpha= 0.5) 
 cdf <- ddply(t1.2012.full[t1.2012.full$blanks!=0,], .(Sex), summarise, blanks.mean=mean(blanks), blanks.sd=sd(blanks))
+@
+
+If we examine the above, it seems that the data are simmilar for both men and women, with the exception of the zero blanks point. This is supported by the following table  which shows the proportion of male and female students who answered all questions and left nothing blank.
+
+<<number_blanks, echo=FALSE, results='asis' >>=  
+stargazer(ddply(t1.2012.full, .(Sex), summarise, 
+                Answered.Everything=paste(format(mean(blanks==0)*100,digits = 4),"%")),
+                summary=FALSE, title ="Students who answered all questions")  
+@
+
+
+<<histogram-number-blanks-no-zero, echo=FALSE>>=
 ggplot(t1.2012.full[t1.2012.full$blanks!=0,],aes(x=blanks, fill = Sex)) + 
   geom_histogram(binwidth = 0.5, alpha = 0.5,position = "identity") + 
-  geom_vline(data=cdf, aes(xintercept=c(blanks.mean),  colour=Sex),linetype="dashed", size=1, alpha = 0.5)
+  geom_vline(data=cdf, aes(xintercept=c(blanks.mean),  colour=Sex),linetype="dashed", size=0.5, alpha = 0.5)
 @
 
 \end{document}
