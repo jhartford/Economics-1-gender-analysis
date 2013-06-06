@@ -28,6 +28,7 @@ require(stargazer)
 require(ggplot2)
 library(plyr)
 require(reshape2)
+require(xtable)
 
 markScript <- function(memo,data,neg.marking = TRUE){
   n <- length(memo[memo!=""])
@@ -72,6 +73,7 @@ t1.2012<- read.csv("out/econ1008-20120327.csv", sep = ",")
 t1.2012.marked <- markScript(memo2012$Micro.T1.sem1.2012,t1.2012)
 t1.2012.full<-merge(EC1008.2012,t1.2012.marked)
 t1.2012.full$Sex <- relevel(t1.2012.full$Sex,"M")
+t1.2012.full$levels <- with(t1.2012.full,cut(Test.Segment.Percentile,quantile(Test.Segment.Percentile,na.rm=TRUE)))
 
 t1.2013<- read.csv("out/econ1008a-20130319.csv", sep = ",")
 t1.2013.marked <- markScript(memo2012$Micro.T1..sem1..2013,t1.2013,neg.marking = FALSE)
@@ -135,17 +137,35 @@ stargazer(mod.combined.full,
 \newpage{}
 
 <<regression_melted,echo=FALSE>>=
-t1.2012.limited <- t1.2012.full[,c("sn","Test.Segment.Percentile","blanks","mark","Sex","V1","V2","V3","V4","V5","V6","V7","V8","V9","V10","V11","V12","V13","V14","V15")]
-t1.2012.melted <- melt(t1.2012.limited,id=c("sn","Test.Segment.Percentile","blanks","mark","Sex"))
+t1.2012.limited <- t1.2012.full[,c("sn","Test.Segment.Percentile","blanks","mark","Sex","V1","V2","V3","V4","V5","V6","V7","V8","V9","V10","V11","V12","V13","V14","V15","levels")]
+t1.2012.melted <- melt(t1.2012.limited,id=c("sn","Test.Segment.Percentile","blanks","mark","Sex","levels"))
 names(t1.2012.melted)[names(t1.2012.melted)=="variable"]<-"question"
 t1.2012.melted$blank <- "answered" 
 t1.2012.melted$blank[t1.2012.melted$value == 0] <- "blank" 
 t1.2012.melted$blank <- as.factor(t1.2012.melted$blank)
-mod.melted = glm(blank~Test.Segment.Percentile+mark+Sex,data=t1.2012.melted,family=binomial(link="logit"))
+t1.2012.melted$blank <- relevel(t1.2012.melted$blank,"blank")
+mod.melted = glm(blank~mark+Sex*levels,data=t1.2012.melted,family=binomial(link="logit"))
 @
 
+
+<<proportion_tables,echo=FALSE>>=
+Sex.table <- prop.table(with(t1.2012.melted,table(Sex,blank)),1)
+Male.table <- prop.table(with(t1.2012.melted[t1.2012.melted$Sex=="M",],table(levels,blank)),1)
+Female.table <- prop.table(with(t1.2012.melted[t1.2012.melted$Sex=="F",],table(levels,blank)),1)
+@
+
+<<proportion_table_output, echo=FALSE, results='asis' >>= 
+xtable(Sex.table, caption = "Frequency table for men and women",digits=4) 
+xtable(Female.table, caption = "Frequency table for women",digits=4)
+xtable(Male.table, caption = "Frequency table for men",digits=4) 
+@
+
+
 <<regression_meltedoutput, echo=FALSE, results='asis' >>=  
-stargazer(mod.melted, title="Melted Regression Results",dep.var.labels = c("Left Question Blank"),covariate.labels=c("Matric Average", "Test 1 Mark", "Sex - Female", "Constant")) 
+stargazer(mod.melted, title="Melted Regression Results",dep.var.labels = c("Answered Question"),
+          covariate.labels=c("Test Mark", "Sex - Female", "Matric Math Mark - (66,73]", 
+                             "Matric Math Mark - (73,82]", "Matric Math Mark - (82,100]",
+                             "Female \\& Math Mark - (66,73]","Female \\& Math Mark - (73,82]","Female \\& Math Mark - (82,100]")) 
 @
 
 <<mark_levels, echo=FALSE, results='asis' >>=  
