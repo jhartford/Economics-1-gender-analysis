@@ -71,10 +71,12 @@ EC1008.2013$sn <- gsub(pattern = "[A-Z]",replacement="",EC1008.2013$Student.Numb
 t1.2012<- read.csv("out/econ1008-20120327.csv", sep = ",")
 t1.2012.marked <- markScript(memo2012$Micro.T1.sem1.2012,t1.2012)
 t1.2012.full<-merge(EC1008.2012,t1.2012.marked)
+t1.2012.full$Sex <- relevel(t1.2012.full$Sex,"M")
 
 t1.2013<- read.csv("out/econ1008a-20130319.csv", sep = ",")
 t1.2013.marked <- markScript(memo2012$Micro.T1..sem1..2013,t1.2013,neg.marking = FALSE)
 t1.2013.full<-merge(EC1008.2013,t1.2013.marked)
+t1.2013.full$Sex <- relevel(t1.2013.full$Sex,"M")
 
 temp2012 <- t1.2012.full[,c("sn","Calendar.Instance.Year","Age","Home.Language.Description","Hp.Province","Race.Description","Sex","Test.Segment.Percentile","mark","mark.lenient","mark.harsh","blanks")]
 temp2012$neg.marking <- TRUE
@@ -83,6 +85,8 @@ temp2013$neg.marking <- FALSE
 combined <- rbind(temp2012,temp2013)
 repeats <- merge(temp2012,temp2013, by = "sn")
 rm(temp2012,temp2013)
+combined$levels <- with(combined,cut(Test.Segment.Percentile,quantile(Test.Segment.Percentile,na.rm=TRUE)))
+combined$Sex <- relevel(combined$Sex,"M")
 @
 
 
@@ -102,26 +106,27 @@ rm(temp2012,temp2013)
 <<regressions_calculations, echo=FALSE, include=FALSE>>=
 mod.lm2012 <- lm(mark ~ Sex + Race.Description + Test.Segment.Percentile + Age, data = t1.2012.full)
 mod.lm2013 <- lm(mark ~ Sex + Race.Description + Test.Segment.Percentile + Age, data = t1.2013.full)
-mod.combined <- lm(mark ~ Sex*neg.marking + Race.Description + Test.Segment.Percentile + Age , data = combined)
-mod.combined.full <- lm(mark ~ Sex*neg.marking + Race.Description*neg.marking + Test.Segment.Percentile + Age , data = combined)
+mod.combined <- lm(mark ~ Sex*neg.marking + Race.Description + Test.Segment.Percentile + Age, data = combined)
+mod.combined.cuts <- lm(mark ~ Sex*levels*neg.marking + Age, data = combined)
+mod.combined.full <- lm(mark ~ Sex*neg.marking + Race.Description*neg.marking + Test.Segment.Percentile + Age, data = combined)
 @
 
 <<regression_output, echo=FALSE, results='asis' >>=  
 stargazer(mod.lm2012,mod.lm2013, mod.combined, 
           title="Regression Results",
-          dep.var.labels = c("Test 1 Mark"),
-          covariate.labels=c("Sex - Male","Negative Marking","Race \\& Chinese",
+          dep.var.labels = c("Test 1 Mark"),          
+          covariate.labels=c("Sex - Female","Negative Marking","Race \\& Chinese",
                              "Race \\& Coloured","Race \\& Indian","Race \\& White",
-                             "Matric Maths Average","Age","Male Negative Marking","Constant")) 
+                             "Matric Maths Average","Age","Female \\& Negative Marking","Constant")) 
 @
 
 <<regression_output_full, echo=FALSE, results='asis' >>=  
 stargazer(mod.combined.full, 
           title="Regression Results",
           dep.var.labels = c("Test 1 Mark"),          
-          covariate.labels=c("Sex - Male","Negative Marking","Race - Chinese",
+          covariate.labels=c("Sex - Female","Negative Marking","Race - Chinese",
                              "Race - Coloured","Race - Indian","Race - White",
-                             "Matric Maths Average","Age","Negative Marking \\& Male",
+                             "Matric Maths Average","Age","Negative Marking \\& Female",
                              "Negative Marking \\& Chinese","Negative Marking \\& Coloured",
                              "Negative Marking \\& Indian","Negative Marking \\& White",
                              "Constant")) 
@@ -140,7 +145,11 @@ mod.melted = glm(blank~Test.Segment.Percentile+mark+Sex,data=t1.2012.melted,fami
 @
 
 <<regression_meltedoutput, echo=FALSE, results='asis' >>=  
-stargazer(mod.melted, title="Melted Regression Results",dep.var.labels = c("Left Question Blank"),covariate.labels=c("Matric Average", "Test 1 Mark", "Sex - Male", "Constant")) 
+stargazer(mod.melted, title="Melted Regression Results",dep.var.labels = c("Left Question Blank"),covariate.labels=c("Matric Average", "Test 1 Mark", "Sex - Female", "Constant")) 
+@
+
+<<mark_levels, echo=FALSE, results='asis' >>=  
+stargazer(mod.combined.cuts, title="Regression by mark level",dep.var.labels = c("Test Mark")) 
 @
 
 \subsection{Histograms of number of blanks}
